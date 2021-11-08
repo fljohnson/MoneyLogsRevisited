@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 
 object Central {
     var categoryDao:CategoryDao? = null
+    var txnDao: TxnDao? = null
 
     fun activate(applicationContext: Context?) {
         if(categoryDao == null) {
@@ -26,6 +27,9 @@ object Central {
                 categoryDao!!.insertCategory(Category("Entertainment","food out, movies, events, museums"))
 
             }
+        }
+        if(txnDao == null) {
+            txnDao = AppDatabase.getInstance(applicationContext!!).txnDao()
         }
 
     }

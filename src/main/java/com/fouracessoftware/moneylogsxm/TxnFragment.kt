@@ -21,10 +21,12 @@ import com.fouracessoftware.moneylogsxm.datadeal.Category
 import com.fouracessoftware.moneylogsxm.datadeal.Txn
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
-class TxnFragment : Fragment(), OnItemSelectedListener {
+class TxnFragment : Fragment() {
 
 
     private lateinit var viewModel: MainListViewModel
@@ -78,26 +80,29 @@ class TxnFragment : Fragment(), OnItemSelectedListener {
             startDatePicker()
         }
 
-        victor.findViewById<EditText>(R.id.amount).addTextChangedListener {
-            workingTxn.amount=it.toString().toFloat()
+        victor.findViewById<TextInputLayout>(R.id.amount).editText?.addTextChangedListener {
+            val possible = it.toString().toFloatOrNull()
+            if(possible != null)
+                workingTxn.amount=possible
+            else
+                workingTxn.amount=0f;
+            updateContent()
         }
-        victor.findViewById<EditText>(R.id.payee).addTextChangedListener {
+        victor.findViewById<TextInputLayout>(R.id.payee).editText?.addTextChangedListener {
             workingTxn.who=it.toString()
+            updateContent()
         }
 
 
         (victor.findViewById<TextInputLayout>(R.id.menu_category).editText as AutoCompleteTextView)
-            .onItemSelectedListener = this
+            .onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>?, _, position: Int, id: Long ->
+            workingTxn.category_name = (parent?.adapter?.getItem(position) as Category).name
+            updateContent()
+        }
+
         return victor
     }
 
-    //yeah, this is dirty. I'll look up anonymous classes later
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        workingTxn.category_name = (parent?.adapter?.getItem(position) as Category).name
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -141,6 +146,23 @@ class TxnFragment : Fragment(), OnItemSelectedListener {
         if(!diffFromOriginal()) {
             findNavController().navigateUp()
         }
+
+        viewModel.writeTxn(workingTxn)
+        viewModel.getLastError().observe(viewLifecycleOwner,
+            { t -> //update UI
+                if(t!="WORKING") {
+                    if(t!="OK") {
+                        Snackbar.make(requireView(),t,Snackbar.LENGTH_LONG).show()
+                    }
+                    else {
+                        //we're done here
+                        Snackbar.make(requireView(),"Successfully saved transaction",Snackbar.LENGTH_SHORT)
+                            .show()
+                        findNavController().navigateUp()
+                    }
+
+                }
+            })
     }
     private fun setupList(t: List<Category>?) {
         val adapter = CategoryAdapter(requireContext(), R.layout.category_menu_item,t)
@@ -200,6 +222,8 @@ class TxnFragment : Fragment(), OnItemSelectedListener {
     }
     private fun updateContent() {
         view?.findViewById<TextView>(R.id.txtWhen)?.text=friendlyDate(workingTxn.date)
+        val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
+        diffFromOriginal().also { barra.menu.findItem(R.id.save).isVisible = it }
     }
 
 

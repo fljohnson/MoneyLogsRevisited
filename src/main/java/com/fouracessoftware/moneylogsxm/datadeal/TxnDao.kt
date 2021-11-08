@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TxnDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertTxn(txn: Txn):Long
 
     @Query("SELECT * FROM txn where date>= :firstdate AND date <= :lastdate")

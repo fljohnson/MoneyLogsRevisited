@@ -6,7 +6,7 @@ import androidx.room.*
 data class Txn(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id:Long,
+    var id:Long,
     var who:String,
     var date:String,
     var amount:Float,
