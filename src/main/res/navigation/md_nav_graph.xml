@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/md_nav_graph"
+    app:startDestination="@id/mainListFragment">
+
+    <fragment
+        android:id="@+id/mainListFragment"
+        android:name="com.fouracessoftware.moneylogsxm.MainListFragment"
+        android:label="main_list_fragment"
+        tools:layout="@layout/main_list_fragment" >
+        <action
+            android:id="@+id/action_mainListFragment_to_txnFragment"
+            app:destination="@id/txnFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/txnFragment"
+        android:name="com.fouracessoftware.moneylogsxm.TxnFragment"
+        android:label="txn_fragment"
+        tools:layout="@layout/txn_fragment">
+        <argument
+            android:name="ID"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+</navigation>

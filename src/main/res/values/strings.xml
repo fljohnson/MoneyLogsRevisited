@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MoneyLogsXM</string>
+    <string name="add_txn">Add a tranasaction</string>
+    <string name="label_category">Category</string>
+    <string name="who_or_what">Who or What</string>
+    <string name="amount">Amount</string>
+    <string name="lbl_change_date">Change Date</string>
+    <string name="lbl_save">Save</string>
+    <string name="lbl_set_pay_date">Set the date of this payment</string>
+</resources>
