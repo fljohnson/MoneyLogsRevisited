@@ -13,4 +13,7 @@ interface CategoryDao {
 
     @Query("SELECT * FROM category")
     fun getAllCategories() : Flow<List<Category>>
+
+    @Query("SELECT * FROM category")
+    suspend fun getCategories():List<Category>
 }

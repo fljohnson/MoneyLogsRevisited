@@ -1,5 +1,6 @@
 package com.fouracessoftware.moneylogsxm
 
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,7 +19,7 @@ class MainListFragment : Fragment() {
 
 
     private lateinit var viewModel: MainListViewModel
-
+    private val dbIDs = ArrayList<ArrayList<Long>>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,12 +33,30 @@ class MainListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainListViewModel::class.java)
         // TODO: Use the ViewModel
-        viewModel.getCategories().observe(viewLifecycleOwner,object : Observer<List<Category>?> {
-            override fun onChanged(t: List<Category>?) {
+        viewModel.getCategoriesAndTxns().observe(viewLifecycleOwner,object : Observer<List<Displayable>?> {
+            override fun onChanged(t: List<Displayable>?) {
                 //update UI
                 setupList(t)
             }
         })
+        viewModel.loadTxnsPerCategory()
+        view?.findViewById<ExpandableListView>(R.id.bigList)?.setOnChildClickListener(object:ExpandableListView.OnChildClickListener{
+            override fun onChildClick(
+                parent: ExpandableListView?,
+                v: View?,
+                groupPosition: Int,
+                childPosition: Int,
+                id: Long
+            ): Boolean {
+                println(dbIDs[groupPosition][childPosition])
+                //TODO:bundle as an arg, then navicate
+                return true
+            }
+
+        }
+
+        )
+
 
         view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener {
             val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
@@ -48,7 +67,7 @@ class MainListFragment : Fragment() {
         }
     }
 
-    private fun setupList(t: List<Category>?) {
+    private fun setupList(t: List<Displayable>?) {
         if(t == null) {
             return
         }
@@ -57,21 +76,53 @@ class MainListFragment : Fragment() {
         val groupTo= intArrayOf(android.R.id.text1) //arrayOf(R.id.category_name).toIntArray()
         val groupLayout = android.R.layout.simple_expandable_list_item_1//R.layout.list_category
 
-        val childData:ArrayList<ArrayList<HashMap<String,Int>>> = arrayListOf()
+        val childData: ArrayList<ArrayList<HashMap<String,String>>> = arrayListOf()
         val childFrom = arrayOf("TXN")
         val childTo = intArrayOf(android.R.id.text2)
         val childLayout = android.R.layout.simple_expandable_list_item_2
+        dbIDs.clear()
+        var x=-1
         for(i in t){
+            x++
+            dbIDs.add(arrayListOf())
             val aha = HashMap<String, String>()
-            aha.set("NAME", i.name)
+            aha.set("NAME", i.category_name)
             groupData.add(aha)
 
-            childData.add(arrayListOf())
+            val children: ArrayList<HashMap<String, String>> = ArrayList()
+            var y=-1
+            for(j in i.txnSet){
+                y++
+                var curChildMap = HashMap<String,String>()
+                curChildMap.set("TXN","${j.amount} to ${j.who} on ${j.date}")
+                children.add(curChildMap)
+                println("Adding "+j.id+"at ($x,$y)")
+                dbIDs[x].add(j.id)
+            }
+            childData.add(children)
         }
         val adapteur = SimpleExpandableListAdapter(context,groupData,groupLayout,groupFrom,groupTo,
             childData,childLayout,childFrom,childTo)
         view?.findViewById<ExpandableListView>(R.id.bigList)?.setAdapter(adapteur)
-    }
 
+    }
+/*
+    class TxnExpandableListAdapter(
+        context: Context?,
+        groupData: ArrayList<HashMap<String, String>>,
+        groupLayout: Int,
+        groupFrom: Array<String>,
+        groupTo: IntArray,
+        childData: ArrayList<ArrayList<HashMap<String, String>>>,
+        childLayout: Int,
+        childFrom: Array<String>,
+        childTo: IntArray
+    ) : SimpleExpandableListAdapter(context,groupData,groupLayout,groupFrom,groupTo,
+            childData,childLayout,childFrom,childTo) {
+
+    }
+*/
 }
+
+
 
