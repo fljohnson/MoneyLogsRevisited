@@ -11,17 +11,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
 import com.fouracessoftware.moneylogsxm.datadeal.Category
 import com.fouracessoftware.moneylogsxm.datadeal.Txn
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
@@ -29,6 +25,7 @@ import java.util.*
 class TxnFragment : Fragment() {
 
 
+    private var processingUpdate: Boolean = false
     private lateinit var viewModel: MainListViewModel
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
@@ -85,7 +82,7 @@ class TxnFragment : Fragment() {
             if(possible != null)
                 workingTxn.amount=possible
             else
-                workingTxn.amount=0f;
+                workingTxn.amount=0f
             updateContent()
         }
         victor.findViewById<TextInputLayout>(R.id.payee).editText?.addTextChangedListener {
@@ -95,7 +92,7 @@ class TxnFragment : Fragment() {
 
 
         (victor.findViewById<TextInputLayout>(R.id.menu_category).editText as AutoCompleteTextView)
-            .onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>?, _, position: Int, id: Long ->
+            .onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>?, _, position: Int, _: Long ->
             workingTxn.category_name = (parent?.adapter?.getItem(position) as Category).name
             updateContent()
         }
@@ -115,17 +112,28 @@ class TxnFragment : Fragment() {
         if(arguments != null) {
             txnId = requireArguments().getLong("ID")
         }
+        //neat trick: if it's a new one, do the setup based on a blank Txn, otherwise do the setup AFTER we've loaded the Txn
         if(txnId == -1L)
         {
-            originalTxn = Txn(id=-1L,who="",date=dateFormat.format(Calendar.getInstance(TimeZone.GMT_ZONE)),amount=0f,category_name = "")
-            workingTxn = Txn(id=-1L,who=originalTxn.who,date=originalTxn.date,amount=originalTxn.amount,category_name = originalTxn.category_name)
+            beginEditing(null)
+        }
+        else {
+            viewModel.getTxn(txnId).observe(viewLifecycleOwner,{
+                d -> beginEditing(d)
+            })
         }
 
-        updateContent()
 
         super.onViewCreated(view, savedInstanceState)
     }
 
+    private fun beginEditing(starting:Txn?) {
+        originalTxn = starting
+            ?: Txn(id=-1L,who="",date=dateFormat.format(Calendar.getInstance(TimeZone.GMT_ZONE)),amount=0f,category_name = "")
+        workingTxn = Txn(id=originalTxn.id,who=originalTxn.who,date=originalTxn.date,amount=originalTxn.amount,category_name = originalTxn.category_name)
+        updateContent()
+
+    }
     private fun diffFromOriginal():Boolean {
         if(originalTxn.date != workingTxn.date) {
             return true
@@ -221,9 +229,21 @@ class TxnFragment : Fragment() {
         return localFmt.format(outdate)
     }
     private fun updateContent() {
+        //prevent a cascade of calls to updateContent()
+        if(processingUpdate) {
+            return
+        }
+        processingUpdate = true
         view?.findViewById<TextView>(R.id.txtWhen)?.text=friendlyDate(workingTxn.date)
+        view?.findViewById<TextInputLayout>(R.id.payee)?.editText?.setText(workingTxn.who)
+        view?.findViewById<TextInputLayout>(R.id.amount)?.editText?.setText(workingTxn.amount.toString())
+        (view?.findViewById<TextInputLayout>(R.id.menu_category)?.editText as? AutoCompleteTextView)?.setText(workingTxn.category_name)
+
+
+        //now, attend to the Save button
         val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
         diffFromOriginal().also { barra.menu.findItem(R.id.save).isVisible = it }
+        processingUpdate = false
     }
 
 

@@ -118,5 +118,14 @@ class MainListViewModel : ViewModel() {
         }
     }
 
+    fun getTxn(txnId: Long): MutableLiveData<Txn> {
+        val rv = MutableLiveData<Txn>()
+        CoroutineScope(Dispatchers.IO).launch {
+            val retrieved = txnDao.getSingleTxn(txnId)
+            rv.postValue(retrieved)
+        }
+        return rv
+    }
+
 
 }

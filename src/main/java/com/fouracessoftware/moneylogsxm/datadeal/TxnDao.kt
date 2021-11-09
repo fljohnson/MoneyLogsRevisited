@@ -20,4 +20,7 @@ interface TxnDao {
         firstdate: String,
         lastdate: String
     ):List<Txn>
+
+    @Query("SELECT * FROM txn WHERE id = :xid")
+    suspend fun getSingleTxn(xid:Long):Txn
 }

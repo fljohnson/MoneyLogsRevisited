@@ -48,8 +48,8 @@ class MainListFragment : Fragment() {
                 childPosition: Int,
                 id: Long
             ): Boolean {
-                println(dbIDs[groupPosition][childPosition])
-                //TODO:bundle as an arg, then navicate
+                //bundle that ID as an arg, then navigate
+                openItem(dbIDs[groupPosition][childPosition])
                 return true
             }
 
@@ -59,12 +59,17 @@ class MainListFragment : Fragment() {
 
 
         view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener {
-            val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
-            barra.menu.findItem(R.id.save).isVisible = true;
-            var args = Bundle()
-            args.putLong("ID",-1L)
-            (requireActivity() as MainActivity).navController.navigate(R.id.txnFragment,args)
+            //val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
+            //barra.menu.findItem(R.id.save).isVisible = true;
+            openItem(-1L)
+
         }
+    }
+
+    private fun openItem(i:Long) {
+        var args = Bundle()
+        args.putLong("ID",i)
+        (requireActivity() as MainActivity).navController.navigate(R.id.txnFragment,args)
     }
 
     private fun setupList(t: List<Displayable>?) {

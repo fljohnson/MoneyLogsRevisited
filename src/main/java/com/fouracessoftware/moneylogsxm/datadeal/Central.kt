@@ -30,6 +30,11 @@ object Central {
         }
         if(txnDao == null) {
             txnDao = AppDatabase.getInstance(applicationContext!!).txnDao()
+            CoroutineScope(Dispatchers.IO).launch {
+                txnDao!!.insertTxn(Txn(0L,"Rent","2021-11-03",827.53f,"Housing"))
+                txnDao!!.insertTxn(Txn(0L,"Acme Markets","2021-11-01",27.92f,"Groceries"))
+                txnDao!!.insertTxn(Txn(0L,"ShopRite","2021-11-09",12.09f,"Groceries"))
+            }
         }
 
     }
