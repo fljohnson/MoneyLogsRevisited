@@ -75,7 +75,7 @@ class MainListViewModel : ViewModel() {
             }
             else
             {
-                //TODO:updateTxn(bare)
+                txnDao.updateTxn(bare)
             }
         }
 
