@@ -69,4 +69,28 @@
         android:layout_marginTop="192dp"
         android:text="@string/lbl_change_date" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/notes"
+        android:layout_width="match_parent"
+        android:layout_height="194dp"
+        android:layout_gravity="start|top"
+        android:layout_marginVertical="256dp"
+        android:gravity="start|top"
+        android:textAlignment="gravity"
+        app:counterEnabled="true"
+        app:counterMaxLength="128">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:gravity="start|top"
+            android:hint="@string/comments"
+            android:inputType="textMultiLine"
+            android:maxLength="128"
+            android:maxLines="4"
+            android:selectAllOnFocus="false"
+            android:singleLine="false"
+            android:textAlignment="gravity" />
+    </com.google.android.material.textfield.TextInputLayout>
 </FrameLayout>

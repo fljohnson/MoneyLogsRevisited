@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.addTextChangedListener
@@ -21,6 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
+import kotlin.math.min
 
 class TxnFragment : Fragment() {
 
@@ -77,6 +79,8 @@ class TxnFragment : Fragment() {
             startDatePicker()
         }
 
+
+
         victor.findViewById<TextInputLayout>(R.id.amount).editText?.addTextChangedListener {
             val possible = it.toString().toFloatOrNull()
             if(possible != null)
@@ -85,15 +89,27 @@ class TxnFragment : Fragment() {
                 workingTxn.amount=0f
             updateContent()
         }
+
         victor.findViewById<TextInputLayout>(R.id.payee).editText?.addTextChangedListener {
-            workingTxn.who=it.toString()
+            workingTxn.who=it.toString()//.trim()
+            updateContent()
+        }
+        victor.findViewById<TextInputLayout>(R.id.notes).editText?.addTextChangedListener {
+            val netNote = it.toString()//.trim()
+            workingTxn.notes= if(netNote.isEmpty()) {
+                null
+                }
+                else
+            {
+                netNote
+            }
             updateContent()
         }
 
 
         (victor.findViewById<TextInputLayout>(R.id.menu_category).editText as AutoCompleteTextView)
             .onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>?, _, position: Int, _: Long ->
-            workingTxn.category_name = (parent?.adapter?.getItem(position) as Category).name
+            workingTxn.category_name = (parent?.adapter?.getItem(position) as Category).name.trim()
             updateContent()
         }
 
@@ -130,7 +146,13 @@ class TxnFragment : Fragment() {
     private fun beginEditing(starting:Txn?) {
         originalTxn = starting
             ?: Txn(id=-1L,who="",date=dateFormat.format(Calendar.getInstance(TimeZone.GMT_ZONE)),amount=0f,category_name = "")
-        workingTxn = Txn(id=originalTxn.id,who=originalTxn.who,date=originalTxn.date,amount=originalTxn.amount,category_name = originalTxn.category_name)
+        val netNotes = if(originalTxn.notes == null) {
+            null
+        }
+        else {
+            originalTxn.notes!!.trim()
+        }
+        workingTxn = Txn(id=originalTxn.id,who=originalTxn.who.trim(),date=originalTxn.date,amount=originalTxn.amount,category_name = originalTxn.category_name,notes = netNotes)
         updateContent()
 
     }
@@ -145,6 +167,9 @@ class TxnFragment : Fragment() {
             return true
         }
         if(originalTxn.category_name != workingTxn.category_name) {
+            return true
+        }
+        if(originalTxn.notes != workingTxn.notes) {
             return true
         }
         return false
@@ -235,15 +260,36 @@ class TxnFragment : Fragment() {
         }
         processingUpdate = true
         view?.findViewById<TextView>(R.id.txtWhen)?.text=friendlyDate(workingTxn.date)
-        view?.findViewById<TextInputLayout>(R.id.payee)?.editText?.setText(workingTxn.who)
-        view?.findViewById<TextInputLayout>(R.id.amount)?.editText?.setText(workingTxn.amount.toString())
+        setEditTextValue(view?.findViewById<TextInputLayout>(R.id.payee)?.editText!!,workingTxn.who)
+        //?.setText()
+     //   view?.findViewById<TextInputLayout>(R.id.amount)?.editText?.setText(workingTxn.)
+        setEditTextValue(view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!,workingTxn.amount.toString())
         (view?.findViewById<TextInputLayout>(R.id.menu_category)?.editText as? AutoCompleteTextView)?.setText(workingTxn.category_name)
+        val workingNotes = if(workingTxn.notes != null) { //neat "conditional assignment" construct
+            workingTxn.notes!!
+        }
+        else
+        {
+            ""
+        }
+        setEditTextValue(view?.findViewById<TextInputLayout>(R.id.notes)?.editText!!,workingNotes)
+        //view?.findViewById<TextInputLayout>(R.id.notes)?.editText?.setText(workingNotes)
+        //view?.findViewById<TextInputLayout>(R.id.notes)?.editText?
 
 
         //now, attend to the Save button
         val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
         diffFromOriginal().also { barra.menu.findItem(R.id.save).isVisible = it }
         processingUpdate = false
+    }
+
+    private fun setEditTextValue(editText: EditText, newValue: String) {
+        val priorEnd = editText.selectionEnd
+        val priorStart = editText.selectionStart
+        var finalEnd:Int = min(priorEnd,newValue.length)
+        var finalStart:Int = finalEnd - (priorEnd-priorStart)
+        editText.setText(newValue)
+        editText.setSelection(finalStart,finalEnd)
     }
 
 
