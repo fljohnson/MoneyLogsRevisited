@@ -21,8 +21,8 @@ abstract class AppDatabase:RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context): AppDatabase {
-            return Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java) //, "TheMoneyLog")
-                //.createFromAsset("database/goods.db")
+            return Room.databaseBuilder(context, AppDatabase::class.java, "TheMoneyLogs")
+                .createFromAsset("database/TheMoneyLogsProto.db")
                 .build()
         }
     }

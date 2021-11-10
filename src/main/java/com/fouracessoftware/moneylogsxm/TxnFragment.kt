@@ -263,7 +263,13 @@ class TxnFragment : Fragment() {
         setEditTextValue(view?.findViewById<TextInputLayout>(R.id.payee)?.editText!!,workingTxn.who)
         //?.setText()
      //   view?.findViewById<TextInputLayout>(R.id.amount)?.editText?.setText(workingTxn.)
-        setEditTextValue(view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!,workingTxn.amount.toString())
+        val workingTxt = view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!.text.toString()
+        if(workingTxt.toFloatOrNull() != workingTxn.amount) {
+            setEditTextValue(
+                view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!,
+                workingTxn.amount.toString()
+            )
+        }
         (view?.findViewById<TextInputLayout>(R.id.menu_category)?.editText as? AutoCompleteTextView)?.setText(workingTxn.category_name)
         val workingNotes = if(workingTxn.notes != null) { //neat "conditional assignment" construct
             workingTxn.notes!!
