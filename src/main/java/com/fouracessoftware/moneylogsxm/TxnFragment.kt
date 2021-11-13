@@ -85,10 +85,11 @@ class TxnFragment : Fragment() {
 
         victor.findViewById<TextInputLayout>(R.id.amount).editText?.addTextChangedListener {
             strAmount=it.toString()
-            if(strAmount.isEmpty())
+            var possible = strAmount.toFloatOrNull()
+            if(possible == null)
                 workingTxn.amount = 0f
             else
-                workingTxn.amount = strAmount.toFloat()
+                workingTxn.amount = possible
 
             updateContent()
         }
