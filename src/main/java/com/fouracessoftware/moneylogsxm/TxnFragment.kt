@@ -31,6 +31,8 @@ class TxnFragment : Fragment() {
     private lateinit var viewModel: MainListViewModel
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
+    private var strAmount = ""
+
     private lateinit var workingTxn:Txn
     private lateinit var originalTxn:Txn
 
@@ -82,11 +84,12 @@ class TxnFragment : Fragment() {
 
 
         victor.findViewById<TextInputLayout>(R.id.amount).editText?.addTextChangedListener {
-            val possible = it.toString().toFloatOrNull()
-            if(possible != null)
-                workingTxn.amount=possible
+            strAmount=it.toString()
+            if(strAmount.isEmpty())
+                workingTxn.amount = 0f
             else
-                workingTxn.amount=0f
+                workingTxn.amount = strAmount.toFloat()
+
             updateContent()
         }
 
@@ -153,6 +156,7 @@ class TxnFragment : Fragment() {
             originalTxn.notes!!.trim()
         }
         workingTxn = Txn(id=originalTxn.id,who=originalTxn.who.trim(),date=originalTxn.date,amount=originalTxn.amount,category_name = originalTxn.category_name,notes = netNotes)
+        strAmount=workingTxn.amount.toString()
         updateContent()
 
     }
@@ -263,13 +267,14 @@ class TxnFragment : Fragment() {
         setEditTextValue(view?.findViewById<TextInputLayout>(R.id.payee)?.editText!!,workingTxn.who)
         //?.setText()
      //   view?.findViewById<TextInputLayout>(R.id.amount)?.editText?.setText(workingTxn.)
-        val workingTxt = view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!.text.toString()
+       /*val workingTxt = view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!.text.toString()
         if(workingTxt.toFloatOrNull() != workingTxn.amount) {
-            setEditTextValue(
-                view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!,
-                workingTxn.amount.toString()
-            )
-        }
+
+        }*/
+        setEditTextValue(
+            view?.findViewById<TextInputLayout>(R.id.amount)?.editText!!,
+            strAmount
+        )
         (view?.findViewById<TextInputLayout>(R.id.menu_category)?.editText as? AutoCompleteTextView)?.setText(workingTxn.category_name)
         val workingNotes = if(workingTxn.notes != null) { //neat "conditional assignment" construct
             workingTxn.notes!!
