@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.iterator
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.fouracessoftware.moneylogsxm.datadeal.Category
@@ -74,6 +75,10 @@ class TxnFragment : Fragment() {
             }
         }
 
+
+        for(i in barra.menu){
+            i.isVisible = false
+        }
         val victor = inflater.inflate(R.layout.txn_fragment, container, false)
 
 

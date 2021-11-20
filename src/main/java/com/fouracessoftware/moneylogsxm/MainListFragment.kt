@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.iterator
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.fouracessoftware.moneylogsxm.datadeal.Category
@@ -57,6 +58,24 @@ class MainListFragment : Fragment() {
 
         )
 
+        val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
+        for(i in barra.menu){
+            i.isVisible = false;
+        }
+        barra.menu.findItem(R.id.chronoview).isVisible = true
+
+        barra.setOnMenuItemClickListener { x ->
+
+            when (x.itemId) {
+                R.id.chronoview -> {
+                 //   (requireActivity() as MainActivity).navController.navigate(R.id.monthListFragment)
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
 
         view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener {
             //val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
@@ -77,9 +96,9 @@ class MainListFragment : Fragment() {
             return
         }
         val groupData:ArrayList<HashMap<String, String>> = arrayListOf()
-        val groupFrom = arrayOf("NAME")
-        val groupTo= intArrayOf(android.R.id.text1) //arrayOf(R.id.category_name).toIntArray()
-        val groupLayout = android.R.layout.simple_expandable_list_item_1//R.layout.list_category
+        val groupFrom = arrayOf("NAME","SUBTOTAL")
+        val groupTo= intArrayOf(R.id.text1,R.id.total1) //arrayOf(R.id.category_name).toIntArray()
+        val groupLayout = R.layout.list_category
 
         val childData: ArrayList<ArrayList<HashMap<String,String>>> = arrayListOf()
         val childFrom = arrayOf("TXN")
@@ -91,8 +110,6 @@ class MainListFragment : Fragment() {
             x++
             dbIDs.add(arrayListOf())
             val aha = HashMap<String, String>()
-            aha.set("NAME", i.category_name)
-            groupData.add(aha)
 
             val children: ArrayList<HashMap<String, String>> = ArrayList()
             var y=-1
@@ -104,6 +121,9 @@ class MainListFragment : Fragment() {
                 println("Adding "+j.id+"at ($x,$y)")
                 dbIDs[x].add(j.id)
             }
+            aha.set("NAME", i.category_name) //arrayListOf(," \$${i.sigma()}"))
+            aha.set("SUBTOTAL", " \$${i.sigma()}")
+            groupData.add(aha)
             childData.add(children)
         }
         val adapteur = SimpleExpandableListAdapter(context,groupData,groupLayout,groupFrom,groupTo,

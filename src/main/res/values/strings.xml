@@ -8,4 +8,6 @@
     <string name="lbl_save">Save</string>
     <string name="lbl_set_pay_date">Set the date of this payment</string>
     <string name="comments">Comments</string>
+    <string name="lbl_chronoview">View by Date</string>
+    <string name="lbl_categoryview">View by Category</string>
 </resources>

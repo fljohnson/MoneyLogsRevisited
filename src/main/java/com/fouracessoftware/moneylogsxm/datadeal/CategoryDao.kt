@@ -1,19 +1,18 @@
 package com.fouracessoftware.moneylogsxm.datadeal
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-
+import com.fouracessoftware.moneylogsxm.datadeal.Category
 @Dao
 interface CategoryDao {
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertCategory(category: Category):Long
+    fun insertCategory(category: Category):Long
 
     @Query("SELECT * FROM category")
     fun getAllCategories() : Flow<List<Category>>
 
-    @Query("SELECT * FROM category")
-    suspend fun getCategories():List<Category>
+
+    @Query("SELECT name,description FROM category")
+    fun getCategories():List<Category>
 }

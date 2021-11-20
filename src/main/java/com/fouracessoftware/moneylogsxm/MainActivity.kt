@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         for(i in barra.menu){
             i.isVisible = false;
         }
+        barra.menu.findItem(R.id.chronoview).isVisible = true
         barra.setupWithNavController(navController,appBarConfiguration)
         //(requireActivity() as MainActivity).setSupportActionBar(barra)
 //    setupActionBarWithNavController(navController, appBarConfiguration)
