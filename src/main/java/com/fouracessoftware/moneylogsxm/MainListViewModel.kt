@@ -2,6 +2,7 @@ package com.fouracessoftware.moneylogsxm
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.icu.util.Currency
 import android.icu.util.TimeZone
 import androidx.annotation.MainThread
 import androidx.lifecycle.*
@@ -127,5 +128,11 @@ class MainListViewModel : ViewModel() {
         return rv
     }
 
+    companion object {
 
+        val intlCurrency = Currency.getInstance(Locale.getDefault())
+        fun currencize(inValue:Number):String {
+            return intlCurrency.symbol+String.format("%."+intlCurrency.defaultFractionDigits+"f",inValue)
+        }
+    }
 }

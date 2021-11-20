@@ -1,6 +1,8 @@
 package com.fouracessoftware.moneylogsxm
 
 import android.content.Context
+import android.icu.util.Currency
+import android.icu.util.CurrencyAmount
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -15,6 +17,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.fouracessoftware.moneylogsxm.datadeal.Category
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class MainListFragment : Fragment() {
 
@@ -122,7 +127,7 @@ class MainListFragment : Fragment() {
                 dbIDs[x].add(j.id)
             }
             aha.set("NAME", i.category_name) //arrayListOf(," \$${i.sigma()}"))
-            aha.set("SUBTOTAL", " \$${i.sigma()}")
+            aha.set("SUBTOTAL", MainListViewModel.currencize(i.sigma()))
             groupData.add(aha)
             childData.add(children)
         }
