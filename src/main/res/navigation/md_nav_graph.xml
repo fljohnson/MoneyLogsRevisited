@@ -22,7 +22,11 @@
         android:id="@+id/txnListFragment"
         android:name="com.fouracessoftware.moneylogsxm.TxnListFragment"
         android:label="txn_list_fragment"
-        tools:layout="@layout/fragment_txn_list"></fragment>
+        tools:layout="@layout/fragment_txn_list">
+        <action
+            android:id="@+id/action_txnListFragment_to_txnFragment"
+            app:destination="@id/txnFragment" />
+    </fragment>
     <fragment
         android:id="@+id/txnFragment"
         android:name="com.fouracessoftware.moneylogsxm.TxnFragment"

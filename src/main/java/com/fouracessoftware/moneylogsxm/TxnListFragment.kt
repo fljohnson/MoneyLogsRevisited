@@ -8,9 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.fouracessoftware.moneylogsxm.datadeal.Txn
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
  * A fragment representing a list of Items.
@@ -36,9 +39,15 @@ class TxnListFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(MainListViewModel::class.java)
 
+        val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
+
+        barra.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
+        val rv = view.findViewById<RecyclerView>(R.id.list)
+        if (rv is RecyclerView) {
+            with(rv) {
                 layoutManager = when {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
@@ -54,7 +63,31 @@ class TxnListFragment : Fragment() {
 
             }
         }
+
+        view.findViewById<FloatingActionButton>(R.id.floatingActionButtonChronoList).setOnClickListener {
+            //val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
+            //barra.menu.findItem(R.id.save).isVisible = true;
+            openItem(-1L)
+
+        }
         return view
+    }
+
+
+    fun openItem(i:Long) {
+        var args = Bundle()
+        args.putLong("ID",i)
+        (requireActivity() as MainActivity).navController.navigate(R.id.txnFragment,args)
+    }
+
+    fun onItemClick(index: Int) {
+        view?.findViewById<RecyclerView>(R.id.list)?.adapter?.let {
+            val i = it.getItemId(index)
+            if(i != -1L) {
+                openItem(i)
+            }
+        }
+
     }
 
     companion object {
