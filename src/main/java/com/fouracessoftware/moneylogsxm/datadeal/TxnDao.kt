@@ -8,8 +8,8 @@ interface TxnDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insertTxn(txn: Txn):Long
 
-    @Query("SELECT * FROM txn where date>= :firstdate AND date <= :lastdate")
-    fun getTxns(firstdate:String,lastdate:String) : Flow<List<Txn>>
+    @Query("SELECT * FROM txn where date>= :firstdate AND date < :lastdate ORDER BY date DESC")
+    fun getTxns(firstdate:String,lastdate:String) : List<Txn>
 
     @Query("SELECT * FROM txn where category_name = :category AND date>= :firstdate AND date < :lastdate ORDER BY date")
     fun getCategoryTxns(

@@ -16,6 +16,7 @@ import kotlin.collections.ArrayList
 
 class MainListViewModel : ViewModel() {
 
+    private val txnListLD: MutableLiveData<List<Txn>> = MutableLiveData()
     private var bigListLD: MutableLiveData<List<Displayable>> = MutableLiveData()
     private var categoryListLD: LiveData<List<Category>> = MutableLiveData()
 
@@ -29,6 +30,10 @@ class MainListViewModel : ViewModel() {
     }
     fun getCategories(): LiveData<List<Category>> {
         return categoryListLD
+    }
+
+    fun getTxns(): LiveData<List<Txn>> {
+        return txnListLD
     }
 
     fun getLastError():LiveData<String> {
@@ -119,6 +124,19 @@ class MainListViewModel : ViewModel() {
         }
     }
 
+    fun loadTxns() {
+        var cal=Calendar.getInstance()
+        cal.set(Calendar.DAY_OF_MONTH,1)
+        var firstdate = dateFormat.format(cal)
+        cal.add(Calendar.MONTH,1)
+        var afterdate = dateFormat.format(cal) //first of the following month
+        var categorySet: List<Category>
+        var txnSet:List<Txn>
+        var rv:ArrayList<Displayable> = arrayListOf()
+        CoroutineScope(Dispatchers.IO).launch {
+            txnListLD.postValue(txnDao.getTxns(firstdate,afterdate))
+        }
+    }
     fun getTxn(txnId: Long): MutableLiveData<Txn> {
         val rv = MutableLiveData<Txn>()
         CoroutineScope(Dispatchers.IO).launch {

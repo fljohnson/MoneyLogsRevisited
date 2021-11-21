@@ -14,7 +14,15 @@
             android:id="@+id/action_mainListFragment_to_txnFragment"
             app:destination="@id/txnFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_mainListFragment_to_txnListFragment"
+            app:destination="@id/txnListFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/txnListFragment"
+        android:name="com.fouracessoftware.moneylogsxm.TxnListFragment"
+        android:label="txn_list_fragment"
+        tools:layout="@layout/fragment_txn_list"></fragment>
     <fragment
         android:id="@+id/txnFragment"
         android:name="com.fouracessoftware.moneylogsxm.TxnFragment"

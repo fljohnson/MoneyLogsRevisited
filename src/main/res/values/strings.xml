@@ -10,4 +10,5 @@
     <string name="comments">Comments</string>
     <string name="lbl_chronoview">View by Date</string>
     <string name="lbl_categoryview">View by Category</string>
+    <string name="amt_for_cat">%1$s for %2$s</string>
 </resources>

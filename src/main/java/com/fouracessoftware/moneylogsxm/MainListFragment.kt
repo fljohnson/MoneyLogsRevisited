@@ -73,7 +73,7 @@ class MainListFragment : Fragment() {
 
             when (x.itemId) {
                 R.id.chronoview -> {
-                 //   (requireActivity() as MainActivity).navController.navigate(R.id.monthListFragment)
+                    (requireActivity() as MainActivity).navController.navigate(R.id.txnListFragment)
                     true
                 }
                 else -> {
