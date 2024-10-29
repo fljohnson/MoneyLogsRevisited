@@ -41,7 +41,7 @@ class TxnFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        /*Get the Toolbar and add handlers*/
         val barra = (requireActivity() as MainActivity).findViewById<Toolbar>(R.id.toolbar)
 
         barra.setNavigationOnClickListener {
